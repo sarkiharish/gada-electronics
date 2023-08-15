@@ -2,9 +2,11 @@ package com.hari.electronic.store.services.impl;
 
 import com.hari.electronic.store.dtos.PageableResponse;
 import com.hari.electronic.store.dtos.UserDto;
+import com.hari.electronic.store.entities.Role;
 import com.hari.electronic.store.entities.User;
 import com.hari.electronic.store.exceptions.ResourceNotFoundException;
 import com.hari.electronic.store.helper.Helper;
+import com.hari.electronic.store.repositories.RoleRepository;
 import com.hari.electronic.store.repositories.UserRepository;
 import com.hari.electronic.store.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -37,8 +40,17 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper mapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Value("${user.profile.image.path}")
     private String imagePath;
+
+    @Value("${role.normal.id}")
+    private String normalRoleId;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -48,8 +60,15 @@ public class UserServiceImpl implements UserService {
         String userId = UUID.randomUUID().toString();
         userDto.setUserId(userId);
 
+        //encoding password
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+
         //dto --> entity
         User user = dtoToEntity(userDto);
+
+        //fetch role of normal and set it to user
+        Role role = roleRepository.findById(normalRoleId).get();
+        user.getRoles().add(role);
 
         User savedUser = userRepository.save(user);
 
@@ -140,6 +159,11 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findByNameContaining(keyword);
         List<UserDto> userDtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
         return userDtoList;
+    }
+
+    @Override
+    public Optional<User> findUserByEmailOptional(String email) {
+        return userRepository.findByEmail(email);
     }
 
 
