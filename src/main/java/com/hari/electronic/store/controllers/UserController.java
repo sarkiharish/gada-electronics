@@ -7,6 +7,8 @@ import com.hari.electronic.store.dtos.UserDto;
 import com.hari.electronic.store.entities.User;
 import com.hari.electronic.store.services.FileService;
 import com.hari.electronic.store.services.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -27,6 +29,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@Api(value = "UserController", description = "APIs for performing user related operations!")
 public class UserController {
 
     @Autowired
@@ -68,6 +71,7 @@ public class UserController {
 
     //get all
     @GetMapping
+    @ApiOperation(value = "get all users", response = ResponseEntity.class, tags = {"user-controller"})
     public ResponseEntity<PageableResponse<UserDto>> getAllUsers(
             @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,

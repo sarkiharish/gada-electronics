@@ -11,6 +11,7 @@ import com.hari.electronic.store.entities.User;
 import com.hari.electronic.store.exceptions.BadApiRequest;
 import com.hari.electronic.store.security.JwtHelper;
 import com.hari.electronic.store.services.UserService;
+import io.swagger.annotations.Api;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ import java.util.Objects;
 //        methods = {RequestMethod.GET, RequestMethod.POST},
 //        maxAge = 3600
 //)
+@Api(value = "AuthController", description = "APIs for Authentication!!")
 public class AuthController {
 
     @Autowired

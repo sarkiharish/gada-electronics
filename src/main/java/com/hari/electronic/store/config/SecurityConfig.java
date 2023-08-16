@@ -40,6 +40,14 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private final String[] PUBLIC_URLS = {
+            "/swagger-ui/**",
+            "webjars/**",
+            "/swagger-resources/**",
+            "/v3/api-docs/**",
+            "/v2/api-docs/**",
+    };
+
 //    @Bean
 //    public UserDetailsService userDetailsService() {
 //        //create users
@@ -79,14 +87,17 @@ public class SecurityConfig {
 //                .cors()
 //                .disable()
                 .authorizeRequests()
+//                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/auth/login")
                 .permitAll()
                 .requestMatchers("/auth/google")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST, "/users")
                 .permitAll()
-                .requestMatchers(HttpMethod.DELETE,"/users/**")
-                .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE,"/users/**").hasRole("ADMIN")
+//                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers(PUBLIC_URLS)
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -141,6 +152,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
 
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new CorsFilter(source));
+        filterRegistrationBean.setOrder(-1000);
         return filterRegistrationBean;
     }
 }
